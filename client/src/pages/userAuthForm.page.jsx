@@ -7,6 +7,7 @@ import { Toaster, toast } from "react-hot-toast";
 import { storeInSession } from "../common/session";
 import axios from "axios";
 import { UserContext } from "../App";
+import { authWithGoogle } from "../common/firebase";
 
 const UserAuthForm = ({ type }) => {
   const authForm = useRef();
@@ -37,7 +38,7 @@ const UserAuthForm = ({ type }) => {
     let emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/; // regex for email
     let passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/; // regex for password
 
-    // form data
+    // form datak
     let form = new FormData(formElement);
     // let form = new FormData(authForm.current);
     let formData = {};
@@ -67,6 +68,25 @@ const UserAuthForm = ({ type }) => {
     }
 
     userAuthThroughServer(serverRoutes, formData);
+  };
+
+  const handleGoogleAuth = (e) => {
+    e.preventDefault();
+
+    authWithGoogle()
+      .then((user) => {
+        let serverRoutes = "/google-auth";
+
+        let formData = {
+          access_token: user.access_token,
+        };
+
+        userAuthThroughServer(serverRoutes, formData);
+      })
+      .catch((err) => {
+        toast.error("Trouble login through Google");
+        return console.log(err);
+      });
   };
 
   return access_token ? (
@@ -120,7 +140,10 @@ const UserAuthForm = ({ type }) => {
           </div>
 
           {/* google sign-in button */}
-          <button className="btn-dark flex items-center justify-center gap-4 w-[90%] center">
+          <button
+            onClick={handleGoogleAuth}
+            className="btn-dark flex items-center justify-center gap-4 w-[90%] center"
+          >
             <img src={GoolgeIcon} alt="google" className="w-5" />
             continue with Google
           </button>
