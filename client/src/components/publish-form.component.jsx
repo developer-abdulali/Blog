@@ -12,7 +12,6 @@ const PublishForm = () => {
   let charactorsLimit = 200;
   let tagsLimit = 10;
 
-  // Move the useContext hook here
   const {
     userAuth: { access_token },
   } = useContext(UserContext);

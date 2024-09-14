@@ -268,18 +268,19 @@ server.post("/create-blog", verifyJWT, async (req, res) => {
   try {
     let authorId = req.user;
     let { title, desc, banner, tags, content, draft } = req.body;
-    console.log(desc);
 
-    // Validation logic
-    if (
-      !title ||
-      !desc ||
-      desc.length > 200 ||
-      !banner.length ||
-      !content.blocks.length ||
-      tags.length > 10
-    ) {
-      return res.status(403).json({ error: "Validation error" });
+    if (!draft) {
+      // Validation logic
+      if (
+        !title ||
+        !desc ||
+        desc.length > 200 ||
+        !banner.length ||
+        !content.blocks.length ||
+        tags.length > 10
+      ) {
+        return res.status(403).json({ error: "Validation error" });
+      }
     }
 
     tags = tags.map((tag) => tag.toLowerCase());
@@ -328,47 +329,46 @@ server.post("/create-blog", verifyJWT, async (req, res) => {
   }
 });
 
-//   // server.post("/create-blog", verifyJWT, (req, res) => {
-//   let { title, desc, banner, tags, content, draft } = req.body;
+// get all blog posts
+server.get("/latest-blogs", (req, res) => {
+  let maxLimit = 5;
 
-//   // validation
-//   if (!title)
-//     return res
-//       .status(403)
-//       .json({ error: "You must provide a title to publish the blog" });
+  Blog.find({ draft: false })
+    .populate(
+      "author",
+      "personal_info.profile_img personal_info.username personal_info.fullname -_id"
+    )
+    .sort({ publishedAt: -1 })
+    .select("blog_id title desc banner activity tags publishAt -_id")
+    .limit(maxLimit)
+    .then((blogs) => {
+      return res.status(200).json({ blogs });
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+});
 
-//   if (!desc || !desc.length > 200)
-//     return res
-//       .status(403)
-//       .json({ error: "You must provide a description under 200 characters" });
-
-//   if (!banner.length)
-//     return res
-//       .status(403)
-//       .json({ error: "You must provide banner to publish the blog" });
-
-//   if (!content.blocks.length)
-//     return res
-//       .status(403)
-//       .json({ error: "There must besome blog content to publish the blog" });
-
-//   if (!tags.length || tags.length > 10)
-//     return res
-//       .status(403)
-//       .json({ error: "Provide tags in order to publish the blog, maximum 10" });
-
-//   tags = tags.map((tag) => tag.toLowerCase());
-
-//   let blogId =
-//     tit
-//       .replace(/[^a-zA-Z0-9]/g, " ")
-//       .replace(/\s+/g, "-")
-//       .trim() + nanoid();
-
-//   console.log(blogId);
-
-//   return res.json({ status: "done" });
-// });
+server.get("/trending-blogs", (req, res) => {
+  Blog.find({ draft: false })
+    .populate(
+      "author",
+      "personal_info.profile_img personal_info.username personal_info.fullname -_id"
+    )
+    .sort({
+      "activity.total_read": -1,
+      "activity.total_likes": -1,
+      publishedAt: -1,
+    })
+    .select("blog_id title publishAt -_id")
+    .limit(5)
+    .then((blogs) => {
+      return res.status(200).json({ blogs });
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+});
 
 server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
