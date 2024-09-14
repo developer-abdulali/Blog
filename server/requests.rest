@@ -1,6 +1,14 @@
-POST http://localhost:3000/signup 
+
+POST http://localhost:3000/create-blog
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZTU2MWUwY2EwMGJkMDNjYjRiNTZiMSIsImlhdCI6MTcyNjMxNTg1NX0.6LxZuArrWzpO_ZpxUH5BTqTeu5ADEn-D5NUBCtrwNBc
 
 {
-    "fullname": "Ali"
+    "title": "title@ 1234 ddsfs",
+    "banner": "https://exmaple.com",
+    "desc": "test desc",
+    "content": {
+        "blocks": [1, 2]
+    },
+    "tags":["tag1","tag2"]
 }
