@@ -330,6 +330,67 @@ server.post("/create-blog", verifyJWT, async (req, res) => {
 });
 
 // get all blog posts
+// server.get("/latest-blogs", (req, res) => {
+//   let maxLimit = 5;
+
+//   Blog.find({ draft: false })
+//     .populate(
+//       "author",
+//       "personal_info.profile_img personal_info.username personal_info.fullname -_id"
+//     )
+//     .sort({ publishedAt: -1 })
+//     .select("blog_id title desc banner activity tags publishAt -_id")
+//     .limit(maxLimit)
+//     .then((blogs) => {
+//       return res.status(200).json({ blogs });
+//     })
+//     .catch((err) => {
+//       console.log(err);
+//     });
+// });
+
+// server.get("/trending-blogs", (req, res) => {
+//   Blog.find({ draft: false })
+//     .populate(
+//       "author",
+//       "personal_info.profile_img personal_info.username personal_info.fullname -_id"
+//     )
+//     .sort({
+//       "activity.total_read": -1,
+//       "activity.total_likes": -1,
+//       publishedAt: -1,
+//     })
+//     .select("blog_id title publishAt -_id")
+//     .limit(5)
+//     .then((blogs) => {
+//       return res.status(200).json({ blogs });
+//     })
+//     .catch((err) => {
+//       console.log(err);
+//     });
+// });
+
+// server.post("/search-blogs", (req, res) => {
+//   let { tag } = req.body;
+//   let findQuery = { tags: tag, draft: false };
+//   let maxLimit = 5;
+//   Blog.find(findQuery)
+//     .populate(
+//       "author",
+//       "personal_info.profile_img personal_info.username personal_info.fullname -_id"
+//     )
+//     .sort({ publishedAt: -1 })
+//     .select("blog_id title desc banner activity tags publishAt -_id")
+//     .limit(maxLimit)
+//     .then((blogs) => {
+//       return res.status(200).json({ blogs });
+//     })
+//     .catch((err) => {
+//       console.log(err);
+//     });
+// });
+
+// Get all blog posts (latest blogs)
 server.get("/latest-blogs", (req, res) => {
   let maxLimit = 5;
 
@@ -339,7 +400,7 @@ server.get("/latest-blogs", (req, res) => {
       "personal_info.profile_img personal_info.username personal_info.fullname -_id"
     )
     .sort({ publishedAt: -1 })
-    .select("blog_id title desc banner activity tags publishAt -_id")
+    .select("blog_id title desc banner activity tags publishedAt -_id") // Fix to publishedAt
     .limit(maxLimit)
     .then((blogs) => {
       return res.status(200).json({ blogs });
@@ -349,6 +410,7 @@ server.get("/latest-blogs", (req, res) => {
     });
 });
 
+// Get trending blogs
 server.get("/trending-blogs", (req, res) => {
   Blog.find({ draft: false })
     .populate(
@@ -360,8 +422,30 @@ server.get("/trending-blogs", (req, res) => {
       "activity.total_likes": -1,
       publishedAt: -1,
     })
-    .select("blog_id title publishAt -_id")
+    .select("blog_id title publishedAt -_id")
     .limit(5)
+    .then((blogs) => {
+      return res.status(200).json({ blogs });
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+});
+
+// Search blogs by tag
+server.post("/search-blogs", (req, res) => {
+  let { tag } = req.body;
+  let findQuery = { tags: tag, draft: false };
+  let maxLimit = 5;
+
+  Blog.find(findQuery)
+    .populate(
+      "author",
+      "personal_info.profile_img personal_info.username personal_info.fullname -_id"
+    )
+    .sort({ publishedAt: -1 }) // Correct spelling here
+    .select("blog_id title desc banner activity tags publishedAt -_id") // Fix to publishedAt
+    .limit(maxLimit)
     .then((blogs) => {
       return res.status(200).json({ blogs });
     })
