@@ -5,7 +5,7 @@ import { ArticleDetails } from "./pages/ArticleDetails/ArticleDetails";
 const App = () => {
   return (
     <Routes>
-      <Route path="/" element={<Home />} />
+      <Route indexk path="/" element={<Home />} />
       <Route path="/blog/:id" element={<ArticleDetails />} />
     </Routes>
   );
