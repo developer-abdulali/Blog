@@ -20,6 +20,11 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    defaultPicture: {
+      type: String,
+      default:
+        "https://p.kindpng.com/picc/s/348-3481623_i-chen-avatar-icon-hd-png-download.png",
+    },
   },
   { timestamps: true }
 );

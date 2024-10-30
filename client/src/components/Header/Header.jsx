@@ -1,144 +1,115 @@
 import { Link } from "react-router-dom";
-import { FiSearch, FiSun, FiMoon, FiMenu, FiX } from "react-icons/fi";
+import images from "../../constants/images";
 import { useState } from "react";
+import { AiOutlineClose, AiOutlineMenu } from "react-icons/ai";
+import { MdKeyboardArrowDown } from "react-icons/md";
 
-const Header = () => {
-  const [darkMode, setDarkMode] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const toggleDarkMode = () => setDarkMode(!darkMode);
-  const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
+const NavItemsInfo = [
+  { name: "Home", type: "link" },
+  { name: "Articles", type: "link" },
+  { name: "Pages", type: "dropdown", items: ["About us", "Contact us"] },
+  { name: "Pricing", type: "link" },
+  { name: "FAQS", type: "link" },
+];
 
+const NavItems = ({ item }) => {
+  const [dropdown, setDropdown] = useState(false);
+
+  const toggleDropdownHander = () => {
+    setDropdown((curState) => {
+      return !curState;
+    });
+  };
   return (
-    <nav
-      className={`sticky top-0 ${
-        darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-900"
-      } border-gray-200`}
-    >
-      <div className="flex items-center justify-between p-4">
-        {/* Logo */}
-        <Link to="/" className="flex items-center">
-          <div className="bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg px-3 py-1 text-white font-bold mr-2">
-            {`Ali's`}
-          </div>
-          <span className="text-lg font-semibold">Blog</span>
-        </Link>
-
-        {/* Mobile View Icons */}
-        <div className="flex items-center space-x-4 md:hidden">
-          {/* Search Icon */}
-          <button className="p-2 rounded-full bg-gray-100 dark:bg-gray-800">
-            <FiSearch className="text-gray-500" />
-          </button>
-
-          {/* Sign In Button */}
-          <Link
-            to="/sign-in"
-            className="px-3 py-1 border-2 border-transparent bg-gradient-to-r from-purple-500 to-blue-500 text-white font-semibold rounded"
-          >
-            Sign in
+    <li className="relative group">
+      {item.type === "link" ? (
+        <>
+          <Link to="/" className="px-4 py-2">
+            {item.name}
           </Link>
-
-          {/* Mobile Menu Button */}
+          <span className="cursor-pointer text-blue-500 absolute transition-all duration-500 font-bold right-0 top-0 group-hover:right-[90%] opacity-0 group-hover:opacity-100">
+            /
+          </span>
+        </>
+      ) : (
+        <div className="flex flex-col items-center">
           <button
-            onClick={toggleMobileMenu}
-            className="p-2 rounded-md text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700"
+            onClick={toggleDropdownHander}
+            className="px-4 py-2 flex items-center gap-x-1"
           >
-            {isMobileMenuOpen ? <FiX size={24} /> : <FiMenu size={24} />}
+            <span>{item.name}</span>
+            <MdKeyboardArrowDown />
           </button>
-        </div>
-
-        {/*  Search Box for large screen */}
-        <div className="hidden md:flex items-center relative w-1/3">
-          <input
-            type="text"
-            placeholder="Search..."
-            className="pl-4 pr-8 py-2 w-full rounded-full bg-gray-100 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          />
-          <FiSearch className="absolute right-3 text-gray-500" />
-        </div>
-
-        {/* Full Links  for large screen  */}
-        <div className="hidden md:flex items-center space-x-6">
-          {/* Navigation Links */}
-          <Link to="/" className="hover:text-blue-600">
-            Home
-          </Link>
-          <Link to="/about" className="hover:text-blue-600">
-            About
-          </Link>
-          <Link to="/projects" className="hover:text-blue-600">
-            Projects
-          </Link>
-        </div>
-
-        {/* dark mode btn and sign in button */}
-        <div className="hidden md:flex items-center gap-3">
-          {/* Dark Mode Toggle */}
-          <button
-            onClick={toggleDarkMode}
-            className="p-2 rounded-full border border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-700"
+          <div
+            className={`${
+              dropdown ? "block" : "hidden"
+            } lg:hidden transition-all duration-500 pt-4 lg:absolute lg:bottom-0 lg:right-0 lg:transform lg:translate-y-full lg:group-hover:block w-max`}
           >
-            {darkMode ? <FiSun /> : <FiMoon />}
-          </button>
-
-          {/* Sign In Button */}
-          <Link
-            to="/sign-in"
-            className="px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold rounded hover:from-pink-500 hover:to-purple-500 transition-all"
-          >
-            Sign in
-          </Link>
-        </div>
-      </div>
-
-      {/* Mobile Menu */}
-      {isMobileMenuOpen && (
-        <div
-          className={`md:hidden bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700`}
-        >
-          <div className="flex flex-col items-center space-y-4 py-4">
-            <Link
-              to="/"
-              onClick={toggleMobileMenu}
-              className="hover:text-blue-600"
-            >
-              Home
-            </Link>
-            <Link
-              to="/about"
-              onClick={toggleMobileMenu}
-              className="hover:text-blue-600"
-            >
-              About
-            </Link>
-            <Link
-              to="/projects"
-              onClick={toggleMobileMenu}
-              className="hover:text-blue-600"
-            >
-              Projects
-            </Link>
-            <button
-              onClick={() => {
-                toggleDarkMode();
-                toggleMobileMenu();
-              }}
-              className="p-2 rounded-full border border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-700"
-            >
-              {darkMode ? <FiSun /> : <FiMoon />}
-            </button>
-            <Link
-              to="/sign-in"
-              onClick={toggleMobileMenu}
-              className="px-4 py-2 border-2 border-transparent bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold rounded-full hover:from-pink-500 hover:to-purple-500 transition-all"
-            >
-              Sign in
-            </Link>
+            <ul className="bg-dark-soft lg:bg-transparent text-center flex flex-col shadow-lg rounded-md overflow-hidden">
+              {item.items.map((page, i) => (
+                <Link
+                  key={i}
+                  to="/"
+                  className="hover:bg-dark-hard hover:text-white px-4 py-2 text-white lg:text-dark-soft"
+                >
+                  {page}
+                </Link>
+              ))}
+            </ul>
           </div>
         </div>
       )}
-    </nav>
+    </li>
   );
 };
 
+const Header = () => {
+  const [navIsVisible, setNavIsVisible] = useState(false);
+
+  const navIsVisibilityHander = () => {
+    setNavIsVisible((curState) => {
+      return !curState;
+    });
+  };
+
+  return (
+    <section className="sticky top-0 left-0 right-0 z-50 bg-white">
+      <header className="container mx-auto px-5 flex items-center justify-between py-4">
+        {/* logo */}
+        <div>
+          <img src={images.Logo} alt="logo" />
+        </div>
+        {/* menu btn */}
+        <div className="lg:hidden z-50">
+          {navIsVisible ? (
+            <AiOutlineClose
+              className="w-6 h-6"
+              onClick={navIsVisibilityHander}
+            />
+          ) : (
+            <AiOutlineMenu
+              className="w-6 h-6"
+              onClick={navIsVisibilityHander}
+            />
+          )}
+        </div>
+
+        <div
+          className={`${
+            navIsVisible ? "right-0" : "-right-full"
+          } transition-all duration-300 mt-[56px] lg:mt-0 bg-dark-hard lg:bg-transparent z-[49] w-full lg:w-auto flex flex-col items-center justify-center lg:justify-end lg:flex-row fixed top-0 bottom-0  lg:static gap-x-9`}
+        >
+          <ul className="text-white lg:text-dark-soft flex flex-col items-center  gap-y-5 lg:flex-row gap-x-3 font-semibold">
+            {NavItemsInfo.map((item, index) => (
+              <NavItems key={index} item={item} />
+            ))}
+          </ul>
+          <button className="mt-5 lg:mt-0 border-2 border-blue-500 px-6 py-2 rounded-full text-blue-500 font-semibold hover:bg-blue-500 hover:text-white transition-all duration-300">
+            Sign in
+          </button>
+        </div>
+      </header>
+    </section>
+  );
+};
 export default Header;

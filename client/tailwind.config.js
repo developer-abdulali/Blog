@@ -11,16 +11,23 @@
 //   plugins: [require("flowbite/plugin")],
 // };
 
-import flowbitePlugin from "flowbite/plugin";
-
 export default {
-  content: [
-    "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
-    "node_modules/flowbite-react/**/*.{js,ts,jsx,tsx}",
-  ],
+  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        primary: "#1565D8",
+        dark: {
+          light: "#5A7184",
+          hard: "#0D2436",
+          soft: "#183B56",
+        },
+      },
+      // fontFamily: {
+      //   opensans: ["'Open Sans'", "sans-serif"],
+      //   roboto: ["'Roboto'", "sans-serif"],
+      // },
+    },
   },
-  plugins: [flowbitePlugin],
+  plugins: [],
 };

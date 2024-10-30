@@ -1,9 +1,10 @@
 import { Link, useNavigate } from "react-router-dom";
 import SVG from "../../assets/signup.svg";
-import { FaGithub, FaGoogle } from "react-icons/fa";
 import toast from "react-hot-toast";
 import { useState } from "react";
 import axios from "axios";
+import OAuth from "../../components/OAuth/OAuth";
+import { useSelector } from "react-redux";
 
 const SignUp = () => {
   const navigate = useNavigate();
@@ -12,23 +13,19 @@ const SignUp = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const theme = useSelector((state) => state.theme.theme);
 
   const submitHandler = async (e) => {
     e.preventDefault();
     try {
-      const formData = {
-        fullName,
-        username,
-        email,
-        password,
-      };
+      const formData = { fullName, username, email, password };
 
       if (!fullName || !username || !email || !password) {
         toast.error("All fields are required");
         return;
       }
+
       setLoading(true);
-      // const res = await axios.post(`${backendURL}/auth/signup`, formData);
       const res = await axios.post(`api/auth/signup`, formData);
       toast.success(res.data.message);
       setLoading(false);
@@ -37,7 +34,6 @@ const SignUp = () => {
       console.log(error);
       toast.error(error.response?.data?.message || "An error occurred");
       setLoading(false);
-      //clear the form data
       setFullName("");
       setUsername("");
       setEmail("");
@@ -46,50 +42,49 @@ const SignUp = () => {
   };
 
   return (
-    <div className="flex h-screen">
+    <div
+      className={`flex h-screen transition-colors duration-300 ${
+        theme === "dark" ? "bg-gray-900 text-white" : "bg-white text-gray-900"
+      }`}
+    >
       {/* Left Panel */}
-      <div className="hidden lg:flex items-center justify-center flex-1 bg-white text-black">
+      <div
+        className={`hidden lg:flex items-center justify-center flex-1 ${
+          theme === "dark" ? "bg-gray-800" : "bg-gray-200"
+        }`}
+      >
         <div className="max-w-md text-center">
-          <img src={SVG} alt="svg" />
+          <img src={SVG} alt="Illustration" />
         </div>
       </div>
+
       {/* Right Panel */}
-      <div className="w-full bg-gray-100 lg:w-1/2 flex items-center justify-center">
+      <div
+        className={`w-full lg:w-1/2 flex items-center justify-center ${
+          theme === "dark" ? "bg-gray-900" : "bg-gray-100"
+        }`}
+      >
         <div className="max-w-md w-full p-6">
-          <h1 className="text-3xl font-semibold mb-6 text-black text-center">
+          <h1
+            className={`text-3xl font-semibold mb-6 text-center ${
+              theme === "dark" ? "text-white" : "text-black"
+            }`}
+          >
             Sign Up
           </h1>
-          <h1 className="text-sm font-semibold mb-6 text-gray-500 text-center">
-            Join to Our Community with all time access and free
-          </h1>
-          <div className="mt-4 flex flex-col lg:flex-row items-center justify-between">
-            <div className="w-full lg:w-1/2 mb-2 lg:mb-0">
-              <button
-                type="button"
-                className="w-full flex justify-center items-center gap-2 bg-white text-sm text-gray-600 p-2 rounded-md hover:bg-gray-50 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-200 transition-colors duration-300"
-              >
-                <FaGoogle className="w-4" />
-                Sign Up with Google
-              </button>
-            </div>
-            <div className="w-full lg:w-1/2 ml-0 lg:ml-2">
-              <button
-                type="button"
-                className="w-full flex justify-center items-center gap-2 bg-white text-sm text-gray-600 p-2 rounded-md hover:bg-gray-50 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-200 transition-colors duration-300"
-              >
-                <FaGithub className="w-4" />
-                Sign Up with Github
-              </button>
-            </div>
-          </div>
+          <h2 className="text-sm font-semibold mb-6 text-center text-gray-500">
+            Join our community with all-time access and for free
+          </h2>
+
+          {/* OAuth Component */}
+          <OAuth />
           <div className="mt-4 text-sm text-gray-600 text-center">
-            <p>or with email</p>
+            <p>or sign up with email</p>
           </div>
+
+          {/* Sign-Up Form */}
           <form onSubmit={submitHandler} className="space-y-4">
-            <label
-              htmlFor="fullName"
-              className="block text-sm font-medium text-gray-700"
-            >
+            <label htmlFor="fullName" className="block text-sm font-medium">
               Full Name
             </label>
             <input
@@ -99,12 +94,13 @@ const SignUp = () => {
               placeholder="John Smith"
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
-              className="p-2 w-full border rounded-md transition-colors duration-300"
+              className={`p-2 w-full border rounded-md ${
+                theme === "dark"
+                  ? "bg-gray-800 text-white"
+                  : "bg-white text-black"
+              }`}
             />
-            <label
-              htmlFor="username"
-              className="block text-sm font-medium text-gray-700"
-            >
+            <label htmlFor="username" className="block text-sm font-medium">
               Username
             </label>
             <input
@@ -114,12 +110,13 @@ const SignUp = () => {
               placeholder="username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="p-2 w-full border rounded-md transition-colors duration-300"
+              className={`p-2 w-full border rounded-md ${
+                theme === "dark"
+                  ? "bg-gray-800 text-white"
+                  : "bg-white text-black"
+              }`}
             />
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-gray-700"
-            >
+            <label htmlFor="email" className="block text-sm font-medium">
               Email
             </label>
             <input
@@ -129,12 +126,13 @@ const SignUp = () => {
               placeholder="example@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="p-2 w-full border rounded-md transition-colors duration-300"
+              className={`p-2 w-full border rounded-md ${
+                theme === "dark"
+                  ? "bg-gray-800 text-white"
+                  : "bg-white text-black"
+              }`}
             />
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-gray-700"
-            >
+            <label htmlFor="password" className="block text-sm font-medium">
               Password
             </label>
             <input
@@ -144,20 +142,28 @@ const SignUp = () => {
               placeholder="********"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="p-2 w-full border rounded-md transition-colors duration-300"
+              className={`p-2 w-full border rounded-md ${
+                theme === "dark"
+                  ? "bg-gray-800 text-white"
+                  : "bg-white text-black"
+              }`}
             />
             <button
               type="submit"
               disabled={loading}
-              className="bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold hover:from-pink-500 hover:to-purple-500 w-full bg-black p-2 rounded-md hover:bg-gray-800 transition-colors duration-300"
+              className={`bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold w-full p-2 rounded-md transition-colors duration-300 ${
+                loading ? "opacity-50 cursor-not-allowed" : ""
+              }`}
             >
               {loading ? "Signing Up..." : "Sign Up"}
             </button>
           </form>
+
+          {/* Footer */}
           <div className="mt-4 text-sm text-gray-600 text-center">
             <p>
               Already have an account?{" "}
-              <Link to="/sign-in" className="text-black hover:underline">
+              <Link to="/sign-in" className="text-blue-500 hover:underline">
                 Sign In
               </Link>
             </p>

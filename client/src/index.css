@@ -2,13 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
-.input-gradient-border {
-  border: 1px solid transparent;
-  background-clip: padding-box;
-  transition: border-color 0.3s ease-in-out;
-}
+@layer components {
+  .editor-btn {
+    @apply flex justify-center items-center text-slate-700 rounded-lg w-8 aspect-square;
+  }
 
-.input-gradient-border:focus {
-  border-image: linear-gradient(to right, #a855f7, #ec4899) 1;
-  outline: none;
+  .active-editor-btn {
+    @apply text-slate-800 bg-slate-200;
+  }
 }
