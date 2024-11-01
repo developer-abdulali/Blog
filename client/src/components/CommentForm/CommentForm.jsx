@@ -1,7 +1,12 @@
 import { useState } from "react";
 
-const CommentForm = ({ btnLabel, formSubmitHandler }) => {
-  const [value, setValue] = useState("");
+const CommentForm = ({
+  btnLabel,
+  formSubmitHandler,
+  formCancelHander = null,
+  initialValue = "",
+}) => {
+  const [value, setValue] = useState(initialValue);
 
   const submitHandler = (e) => {
     e.preventDefault();
@@ -15,16 +20,26 @@ const CommentForm = ({ btnLabel, formSubmitHandler }) => {
         <textarea
           rows={5}
           value={value}
-          placeholder="Leave your comment here.."
-          className="w-full focus:outline-none"
+          placeholder="Leave your comment here..."
+          className="w-full focus:outline-none bg-transparent"
           onChange={(e) => setValue(e.target.value)}
         ></textarea>
-        <button
-          type="submit"
-          className="px-6 py-2.5 rounded-lg bg-primary text-white font-semibold mt-2"
-        >
-          {btnLabel}
-        </button>
+        <div className="flex flex-col-reverse gap-y-2 items-center gap-x-2 min-[420px]:flex-row">
+          {formCancelHander && (
+            <button
+              onClick={formCancelHander}
+              className="mt-2 px-6 py-[9px] rounded-lg border border-red-500 text-red-500"
+            >
+              Cancel
+            </button>
+          )}
+          <button
+            type="submit"
+            className="px-6 py-2.5 rounded-lg bg-primary text-white font-semibold mt-2"
+          >
+            {btnLabel}
+          </button>
+        </div>
       </div>
     </form>
   );

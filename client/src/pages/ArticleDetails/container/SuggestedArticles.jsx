@@ -34,8 +34,9 @@ const SuggestedArticles = ({ className, header, posts = [], tags }) => {
       </div>
       <h2 className="text-dark-hard font-medium mt-8 md:text-xl">Tags</h2>
       <div className="flex flex-wrap gap-x-2 gap-y-2 mt-4">
-        {tags.map((tag) => (
+        {tags.map((tag, index) => (
           <Link
+            key={`${tag}-${index}`}
             to="/"
             className="inline-block rounded-md px-3 py-1.5 bg-primary text-xs text-white md:text-sm"
           >

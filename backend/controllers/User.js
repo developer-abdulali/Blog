@@ -2,6 +2,7 @@ import User from "../models/userModel.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { uploadPicture } from "../middlewares/uploadProfilePicMiddleware.js";
+import { fileRemover } from "../utils/fileRemover.js";
 
 // Sign up functionality
 export const registerUser = async (req, res) => {
@@ -17,18 +18,19 @@ export const registerUser = async (req, res) => {
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create a new user
+    // Create a new user with verified set to false
     const user = new User({
       name,
       email,
       password: hashedPassword,
+      verified: false,
     });
     await user.save();
 
     // Generate token
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
 
-    const userData = {
+    return res.status(201).json({
       _id: user._id,
       avatar: user.avatar,
       name: user.name,
@@ -36,17 +38,51 @@ export const registerUser = async (req, res) => {
       verified: user.verified,
       admin: user.admin,
       token,
-    };
-
-    return res.status(201).json({
-      message: "User created successfully",
-      userData,
     });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: error.message });
   }
 };
+
+// export const registerUser = async (req, res) => {
+//   try {
+//     const { name, email, password } = req.body;
+
+//     // Check if user already exists
+//     const existingUser = await User.findOne({ email });
+//     if (existingUser) {
+//       return res.status(400).json({ message: "User already exists" });
+//     }
+
+//     // Hash the password
+//     const hashedPassword = await bcrypt.hash(password, 10);
+
+//     // Create a new user
+//     const user = new User({
+//       name,
+//       email,
+//       password: hashedPassword,
+//     });
+//     await user.save();
+
+//     // Generate token
+//     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+
+//     return res.status(201).json({
+//       _id: user._id,
+//       avatar: user.avatar,
+//       name: user.name,
+//       email: user.email,
+//       verified: user.verified,
+//       admin: user.admin,
+//       token,
+//     });
+//   } catch (error) {
+//     console.log(error);
+//     return res.status(500).json({ message: error.message });
+//   }
+// };
 
 // Sign in functionality
 export const loginUser = async (req, res) => {
@@ -73,7 +109,9 @@ export const loginUser = async (req, res) => {
     // Generate token
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
 
-    const userData = {
+    const userData = {};
+
+    return res.status(201).json({
       _id: user._id,
       avatar: user.avatar,
       name: user.name,
@@ -81,11 +119,6 @@ export const loginUser = async (req, res) => {
       verified: user.verified,
       admin: user.admin,
       token,
-    };
-
-    return res.status(201).json({
-      message: "User logged in successfully",
-      userData,
     });
   } catch (error) {
     console.log(error);
@@ -161,7 +194,6 @@ export const updateProfile = async (req, res) => {
       verified: updatedUserProfile.verified,
       admin: updatedUserProfile.admin,
       token,
-      // token: await updatedUserProfile.generateJWT(),
     });
   } catch (error) {
     console.log(error);
@@ -170,61 +202,127 @@ export const updateProfile = async (req, res) => {
 };
 
 // Update user profile picture
-export const updateProfilePicture = async (req, res, next) => {
+export const updateProfilePicture = async (req, res) => {
   try {
     const upload = uploadPicture.single("profilePicture");
 
     upload(req, res, async function (err) {
       if (err) {
         const error = new Error(
-          "An unknown error occured when uploading " + err.message
+          "An unknown error occurred when uploading: " + err.message
         );
-        next(error);
+        console.log(error);
+        return res.status(500).json({ message: error.message });
       } else {
-        // every thing went well
+        // Everything went well
+        const updatedUser = await User.findById(req.user._id);
+
         if (req.file) {
-          let filename;
-          let updatedUser = await User.findById(req.user._id);
-          filename = updatedUser.avatar;
-          if (filename) {
-            fileRemover(filename);
+          // Remove previous avatar file if it exists
+          if (updatedUser.avatar) {
+            fileRemover(updatedUser.avatar);
           }
+
+          // Set new avatar and save user
           updatedUser.avatar = req.file.filename;
           await updatedUser.save();
-          res.json({
-            _id: updatedUser._id,
-            avatar: updatedUser.avatar,
-            name: updatedUser.name,
-            email: updatedUser.email,
-            verified: updatedUser.verified,
-            admin: updatedUser.admin,
-            token: await updatedUser.generateJWT(),
-          });
         } else {
-          let filename;
-          let updatedUser = await User.findById(req.user._id);
-          filename = updatedUser.avatar;
-          updatedUser.avatar = "";
-          await updatedUser.save();
-          fileRemover(filename);
-          res.json({
-            _id: updatedUser._id,
-            avatar: updatedUser.avatar,
-            name: updatedUser.name,
-            email: updatedUser.email,
-            verified: updatedUser.verified,
-            admin: updatedUser.admin,
-            token: await updatedUser.generateJWT(),
-          });
+          // No new file, clear the avatar if it exists
+          if (updatedUser.avatar) {
+            fileRemover(updatedUser.avatar);
+            updatedUser.avatar = "";
+            await updatedUser.save();
+          }
         }
+
+        // Generate token
+        const token = jwt.sign({ id: updatedUser._id }, process.env.JWT_SECRET);
+
+        // Send the updated user data with the new token
+        res.json({
+          _id: updatedUser._id,
+          avatar: updatedUser.avatar,
+          name: updatedUser.name,
+          email: updatedUser.email,
+          verified: updatedUser.verified,
+          admin: updatedUser.admin,
+          token,
+        });
       }
     });
   } catch (error) {
-    next(error);
+    console.log(error);
+    res.status(error.statusCode || 500).json({ message: error.message });
   }
 };
 
-export const getAllUsers = async (req, res, next) => {
+// export const updateProfilePicture = async (req, res) => {
+//   try {
+//     const upload = uploadPicture.single("profilePicture");
+
+//     upload(req, res, async function (err) {
+//       if (err) {
+//         const error = new Error(
+//           "An unknown error occured when uploading " + err.message
+//         );
+//         console.log(error);
+//       } else {
+//         // every thing went well
+//         if (req.file) {
+//           let filename;
+//           let updatedUser = await User.findById(req.user._id);
+//           filename = updatedUser.avatar;
+//           if (filename) {
+//             fileRemover(filename);
+//           }
+//           updatedUser.avatar = req.file.filename;
+//           await updatedUser.save();
+
+//           // Generate token
+//           const token = jwt.sign(
+//             { id: updatedUser._id },
+//             process.env.JWT_SECRET
+//           );
+//           res.json({
+//             _id: updatedUser._id,
+//             avatar: updatedUser.avatar,
+//             name: updatedUser.name,
+//             email: updatedUser.email,
+//             verified: updatedUser.verified,
+//             admin: updatedUser.admin,
+//             token,
+//           });
+//         } else {
+//           let filename;
+//           let updatedUser = await User.findById(req.user._id);
+//           filename = updatedUser.avatar;
+//           updatedUser.avatar = "";
+//           await updatedUser.save();
+//           fileRemover(filename);
+//           // Generate token
+//           const token = jwt.sign(
+//             { id: updatedUser._id },
+//             process.env.JWT_SECRET
+//           );
+//           res.json({
+//             _id: updatedUser._id,
+//             avatar: updatedUser.avatar,
+//             name: updatedUser.name,
+//             email: updatedUser.email,
+//             verified: updatedUser.verified,
+//             admin: updatedUser.admin,
+//             token,
+//           });
+//         }
+//       }
+//     });
+//   } catch (error) {
+//     console.log(error);
+//     res.status(error.statusCode || 500).json({ message: error.message });
+//   }
+// };
+
+export const getAllUsers = async (req, res) => {
   try {
     const filter = req.query.searchKeyword;
     let where = {};
@@ -257,11 +355,12 @@ export const getAllUsers = async (req, res, next) => {
 
     return res.json(result);
   } catch (error) {
-    next(error);
+    console.log(error);
+    res.status(error.statusCode || 500).json({ message: error.message });
   }
 };
 
-export const deleteUser = async (req, res, next) => {
+export const deleteUser = async (req, res) => {
   try {
     let user = await User.findById(req.params.userId);
 
@@ -289,6 +388,7 @@ export const deleteUser = async (req, res, next) => {
 
     res.status(204).json({ message: "User is deleted successfully" });
   } catch (error) {
-    next(error);
+    console.log(error);
+    res.status(error.statusCode || 500).json({ message: error.message });
   }
 };

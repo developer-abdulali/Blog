@@ -9,9 +9,9 @@ const HeroSection = () => {
           Read the most interesting articles
         </h1>
         <p className="text-dark-light mt-4 text-center md:text-xl lg:text-base xl:text-xl lg:text-left">
-          Lorem ipsum dolor, sit amet consectetur adipisicing elit. Reiciendis
-          eum sequi deleniti voluptas consequatur quisquam iusto nesciunt
-          recusandae culpa ut!
+          Discover a space where your content and creativity take center stage.
+          Build your audience and grow with ease using our intuitive design
+          tools.
         </p>
         <div className="flex flex-col gap-y-2.5 mt-10 lg:mt-6 xl:mt-10 relative">
           <div className="relative">
@@ -19,7 +19,7 @@ const HeroSection = () => {
             <input
               type="text"
               placeholder="Search article..."
-              className="placeholder:font-bold font-semibold text-dark-soft placeholder:text-[#959EAD] rounded-lg pl-12 pr-3 w-full py-3 focus:outline-none shadow-[rgba(13,38,76,0.19)_0px_9px_20px] md:py-4"
+              className="placeholder:font-semibold font-semibold text-dark-soft placeholder:text-[#959EAD] rounded-lg pl-12 pr-3 w-full py-3 focus:outline-none shadow-[rgba(13,38,76,0.19)_0px_9px_20px] md:py-4"
             />
           </div>
           <button className="w-full bg-primary text-white font-semibold rounded-lg px-5 py-3 md:absolute md:right-2 md:top-1/2 md:-translate-y-1/2 md:w-fit md:py-2">

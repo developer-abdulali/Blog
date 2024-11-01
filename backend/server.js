@@ -18,7 +18,7 @@ app.use(cors());
 const PORT = process.env.PORT || 4000;
 
 // api endpoint
-app.use("/api/user", UserRoutes);
+app.use("/api/users", UserRoutes);
 
 // test route
 app.get("/", (req, res) => {

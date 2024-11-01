@@ -4,6 +4,7 @@ import BreadCrumbs from "../../components/‎BreadCrumbs‎/‎BreadCrumbs‎";
 import images from "../../constants/images";
 import SuggestedArticles from "./container/SuggestedArticles";
 import CommentsContainer from "../../components/CommentsContainer/CommentsContainer";
+import SocialShareButtons from "../../components/SocialShareButtons/SocialShareButtons";
 
 const breadCrumbsData = [
   { name: "Home", link: "/" },
@@ -89,12 +90,21 @@ export const ArticleDetails = () => {
           <CommentsContainer className="mt-10" loggedInUserId="a" />
         </article>
         {/* suggested articles */}
-        <SuggestedArticles
-          header="Latest Articles"
-          posts={postsData}
-          tags={tagsData}
-          className="mt-8 lg:mt-0 lg:max-w-xs"
-        />
+        <div>
+          <SuggestedArticles
+            header="Latest Articles"
+            posts={postsData}
+            tags={tagsData}
+            className="mt-8 lg:mt-0 lg:max-w-xs"
+          />
+          <div className="mt-7">
+            <h2 className="font-medium text-dark-hard md:text-xl">Share on</h2>
+            <SocialShareButtons
+              url={encodeURI("https://github.com/developer-abdulali")}
+              title={encodeURIComponent("Help the children about education")}
+            />
+          </div>
+        </div>
       </section>
     </MainLayout>
   );
